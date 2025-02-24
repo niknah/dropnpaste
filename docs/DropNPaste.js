@@ -189,7 +189,7 @@ class DropNPaste {
 	}
 
 	addMessage(html, cls) {
-		const hms = getCurrentHMS();
+		const hms = this.getCurrentHMS();
 		if(this.lastAddMessage == html) {
 			const firstMessage = this.messagesDiv.children[0];
 			if(firstMessage) {
