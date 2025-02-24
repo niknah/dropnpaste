@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="styles.css">
+	<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+	<link href="/favicon.png" type="image/png" rel="shortcut icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1DVQ3DKNLV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1DVQ3DKNLV');
+</script>
+</head>
+<body>
+
+<div class='main-container'>
+	<div class='buttons-container'>
+		<button id='send' class='Btn'>Send</button>
+		<button id='recv' class='Btn'>Receive</button>
+	</div>
+
+	<table class='inputs-table'>
+		<tr><td>ID:</td><td><input type="text" id="thisid" class='thisid input-text' spellcheck="false" /></td></tr>
+		<tr class='send-item-tr'><td>Send To:</td><td><input type="text" id="peerid" class='peerid input-text' spellcheck="false" /></td></tr>
+	</table>
+
+	<div id='progress-bar' class="loader-bar" style='display: none'>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-border"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+		<div class="block-meter"></div>
+	</div>
+
+	<pre id='recv-text' class='recv-text'></pre>
+
+	<div id='send-div' class='send-div send-item'>
+		<div class='file-selector-container'>
+			<label for="file-selector" class="Btn">Select file(s)</label>
+			<input type="file" id="file-selector"  class='fileBtn file-selector' multiple />
+		</div>
+		<br />
+		<textarea id='drop-area' class='drop-area' placeholder="Paste some text here. Or drop a file."></textarea>
+	</div>
+
+	<div id='recv-div' class='recv-div recv-item'>
+		<div class='text-intro' class='text-intro'>
+		Send file(s)/text from one browser to another on the same network quickly.
+		<br />
+		Alternative to Airdrop, Quick share, sharedrop.io, etc.
+		<br />
+		Works on any device with a modern web browser.
+		</div>
+		<!-- div id='instructions' class='instructions'></div -->
+		<div id='recv-img' class='recv-img'></div>
+		<div id='qrcode-container' class='qrcode-container' style='display: none'>
+			<p>Scan or use link on the device you wish to send from.</p>
+			<div id='qrcode' class='qrcode'></div>
+			<a href='' target='_blank' id='qrcode-link' class='qrcode-link'></a>
+		</div>
+	</div>
+
+	<div id='messages' class='messages'>
+		<p></p>
+	</div>
+
+</div>
+
+<script src="DropNPaste.js"></script>
+</body>
+</html>
