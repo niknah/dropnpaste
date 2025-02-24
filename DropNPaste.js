@@ -160,6 +160,7 @@ class DropNPaste {
 			this.addMessage(`No connection to send to`,'error');
 			return;
 		}
+		console.log('send text');
 		this.conn.send({type:'text', value:this.pasteArea.value});
 		this.lastPasteAreaValue = this.pasteArea.value;
 	}
@@ -169,6 +170,7 @@ class DropNPaste {
 			clearTimeout(this.pasteAreaTimeout);
 		}
 		this.pasteAreaTimeout = setTimeout(() => {
+			this.pasteAreaTimeout = null;
 			this.sendPasteArea();
 		},this.pasteAreaTimeoutWait);
 	}
@@ -335,8 +337,10 @@ class DropNPaste {
 	}
 
 	reconnectPeer() {
-		if(this.reconnectPeerTimeout)
+		if(this.reconnectPeerTimeout) {
+			console.log("already trying to reconenct");
 			return;
+		}
 		this.reconnectPeerTimeout = setTimeout(async () => {
 			if(this.peer.disconnected) {
 				this.initPeer(await this.getThisId());
@@ -430,6 +434,7 @@ class DropNPaste {
 			console.log('connection closed');
 		});
 		this.conn.on('open', () => {
+			this.addMessage(`Connected from: ${conn.peer}`, '');
 			console.log('connection opened');
 			if(this.conn)
 				this.initProgressBar(this.conn);
@@ -510,6 +515,8 @@ class DropNPaste {
 	}
 
 	sendFile() {
+		if(!this.fileList)
+			return;
 		const file = this.fileList[this.fileListUpto];
 		if(!file) {
 			if(this.fileList.length >= 3 ) {
