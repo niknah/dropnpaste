@@ -34,9 +34,13 @@
 	display: block;
 }
 
-.recv-text, .instructions, .text-intro {
+.instructions, .text-intro {
 	width: fit-content;
 	margin: auto;
+}
+.recv-text {
+	width: fit-content;
+	margin: 4px auto;
 }
 
 .recv-img {

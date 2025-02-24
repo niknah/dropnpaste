@@ -193,8 +193,8 @@ class DropNPaste {
 		if(this.lastAddMessage == html) {
 			const firstMessage = this.messagesDiv.children[0];
 			if(firstMessage) {
-				const hms = firstMessage.querySelector('.hms');
-				hms.innerHTML = hms;
+				const hmsSpan = firstMessage.querySelector('.hms');
+				hmsSpan.innerHTML = hms;
 			}
 			return;
 		}

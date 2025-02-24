@@ -403,8 +403,9 @@ class DropNPaste {
 			if(data.type == 'received') {
 				return;
 			}
-			document.getElementById('instructions').style.display='none';
+			document.getElementById('text-intro').style.display='none';
 			if(data.type == 'text') {
+				console.log('received text');
 				const recvText = document.getElementById('recv-text');
 				recvText.innerHTML = data.value;
 				if(data.value != "") {
