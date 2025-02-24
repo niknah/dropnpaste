@@ -1,0 +1,399 @@
+
+* {
+  	font-family: "Pixelify Sans", serif;
+	font-weight: 400;
+	font-style: normal;
+	font-size: calc(100vh/32);
+	color: #444;
+	/* the f letter is too close to i in "fi" */
+	letter-spacing: 1px;
+}
+
+
+/***********/
+
+.main-container {
+	width: 100%;
+}
+
+.inputs-table {
+	margin: auto;
+}
+
+/***********/
+
+.drop-area {
+	width: 50vw;
+	height: 25vw;
+	vertical-align: middle;
+	/* text-align: center; */
+	margin: auto;
+	border-radius: 2vw;
+	border: 3px solid #444;
+	padding: 1vw;
+	display: block;
+}
+
+.recv-text, .instructions, .text-intro {
+	width: fit-content;
+	margin: auto;
+}
+
+.recv-img {
+}
+
+.recv-img > img {
+	display: none;
+	margin: 4px auto;
+	max-width: 90vw;
+	max-height: 60vh;
+	border: 2px solid #000;
+}
+
+.recv-img .show-img {
+	display: block;
+}
+
+.recv-text.has-text {
+	border-radius: 2vw;
+	border: 3px solid #444;
+	padding: 1vw;
+}
+
+/***********/
+/* qrcode */
+
+.qrcode-container {
+	text-align: center;
+}
+.qrcode {
+	width: fit-content;
+	margin: auto;
+}
+.qrcode img {
+	width: 60vw;
+	height: 60vw;
+	max-width: 60vh;
+	max-height: 60vh;
+}
+
+.qrcode-link {
+	max-width: 90vw;
+	word-break: break-all;
+}
+
+/***********/
+
+.input-text {
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  padding: 0.5em;
+  background-color: #ccc;
+  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+  transition: 300ms ease-in-out;
+  margin: 3%;
+}
+
+.input-text:focus {
+  background-color: white;
+  transform: scale(1.05);
+  box-shadow: 13px 13px 40px #969696,
+             -13px -13px 40px #ffffff;
+}
+
+/***********/
+/* messages */
+
+.messages {
+	mask-image: linear-gradient(to bottom, rgb(0 0 0 / 100%) 128px, rgb(255 255 255 / 40%) 100%);
+}
+.messages p {
+	font-size: 2vh;
+	margin: 0px;
+}
+
+.messages .error {
+	color: #c00;
+}
+
+/***********/
+
+button {
+	margin: 2% 5%;
+}
+
+.buttons-container {
+	display: flex;
+	flex-direction: row;
+	width: fit-content;
+	margin: auto;
+}
+
+
+/***********/
+
+.send-item, .recv-item, .send-item-tr, .recv-item-tr {
+	display: none;
+}
+
+.send-mode .send-item {
+	display: block;
+}
+.send-mode .send-item-tr {
+	display: table-row;
+}
+.recv-mode .recv-item {
+	display: block;
+}
+.recv-mode .recv-item-tr {
+	display: table-row;
+}
+
+
+/***********/
+
+.file-selector {
+	display: none;
+}
+.file-selector-container {
+	width: fit-content;
+	margin: auto;
+}
+.file-selector-container label {
+}
+
+
+/***********/
+/* Mobile */
+
+@media (max-width: 600px) {
+	.input-text {
+		width: 60vw;
+		font-size: calc(100vh/48);
+	}
+
+	body .loader-bar {
+		width: 60vw;
+		height: 12vw;
+		grid-template-columns: repeat(3,2vw) repeat(10, 3vw 2vw) repeat(2,2vw);
+		grid-template-rows: repeat(6,2vw);
+	}
+
+	/* font-size: calc(100vh/32); */
+	.qrcode-link {
+		font-size: 2vh;
+	}
+}
+
+/***********/
+/* Progress bar */
+
+
+.loader-bar {
+  margin: 4px auto;
+  width: 30vw;
+  height: 6vw;
+  display: grid;
+  grid-template-columns: repeat(3,1vw) repeat(10, 1.5vw 1vw) repeat(2,1vw);
+  grid-template-rows: repeat(6,1vw);
+}
+
+.block-border {
+  background-color: #444;
+}
+
+.block-meter {
+  background-color: #813dff;
+}
+
+.block-border:nth-of-type(1) {
+  grid-row: 1;
+  grid-column: 3/-3;
+}
+
+.block-border:nth-of-type(2) {
+  grid-row: -2;
+  grid-column: 3/-3;
+}
+
+.block-border:nth-of-type(3) {
+  grid-row: 3/5;
+  grid-column: 1;
+}
+
+.block-border:nth-of-type(4) {
+  grid-row: 3/5;
+  grid-column: -2;
+}
+
+.block-border:nth-of-type(5) {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+.block-border:nth-of-type(6) {
+  grid-row: 2;
+  grid-column: -3;
+}
+
+.block-border:nth-of-type(7) {
+  grid-row: 5;
+  grid-column: 2;
+}
+
+.block-border:nth-of-type(8) {
+  grid-row: 5;
+  grid-column: -3;
+}
+
+.block-meter:nth-of-type(9) {
+  grid-row: 3/5;
+  grid-column: 4;
+}
+
+.block-meter:nth-of-type(10) {
+  grid-row: 3/5;
+  grid-column: 6;
+}
+
+.block-meter:nth-of-type(11) {
+  grid-row: 3/5;
+  grid-column: 8;
+}
+
+.block-meter:nth-of-type(12) {
+  grid-row: 3/5;
+  grid-column: 10;
+}
+
+.block-meter:nth-of-type(13) {
+  grid-row: 3/5;
+  grid-column: 12;
+}
+
+.block-meter:nth-of-type(14) {
+  grid-row: 3/5;
+  grid-column: 14;
+}
+
+.block-meter:nth-of-type(15) {
+  grid-row: 3/5;
+  grid-column: 16;
+}
+
+.block-meter:nth-of-type(16) {
+  grid-row: 3/5;
+  grid-column: 18;
+}
+
+.block-meter:nth-of-type(17) {
+  grid-row: 3/5;
+  grid-column: 20;
+}
+
+.block-meter:nth-of-type(18) {
+  grid-row: 3/5;
+  grid-column: 22;
+}
+
+.block-meter:nth-of-type(19) {
+  grid-row: 3/5;
+  grid-column: 24;
+}
+
+.flash {
+  animation-name: flash;
+  animation-duration: 0.4s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes flash {
+   0%, 50%, 100% {
+      opacity: 1;
+   }
+   25%, 75% {
+      opacity: 0;
+   }
+}
+
+/***********/
+/* Button */
+
+
+/* From Uiverse.io by vinodjangid07 */ 
+.Btn {
+  position: relative;
+  width: fit-content;
+  padding: 10px 30px;
+  border-radius: 45px;
+  border: none;
+  background-color: rgb(151, 95, 255);
+  color: white;
+  box-shadow: 0px 10px 10px rgb(210, 187, 253) inset,
+  0px 5px 10px rgba(5, 5, 5, 0.212),
+  0px -10px 10px rgb(124, 54, 255) inset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Btn::before {
+  width: 70%;
+  height: 2px;
+  position: absolute;
+  background-color: rgba(250, 250, 250, 0.678);
+  content: "";
+  filter: blur(1px);
+  top: 7px;
+  border-radius: 50%;
+}
+
+.Btn::after {
+  width: 70%;
+  height: 2px;
+  position: absolute;
+  background-color: rgba(250, 250, 250, 0.137);
+  content: "";
+  filter: blur(1px);
+  bottom: 7px;
+  border-radius: 50%;
+}
+
+.Btn:hover {
+  animation: jello-horizontal 0.6s both;
+}
+
+@keyframes jello-horizontal {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    transform: scale3d(1.15, 0.75, 1);
+  }
+
+  40% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  50% {
+    transform: scale3d(1.15, 0.85, 1);
+  }
+
+  65% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  75% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+
+/***********/
