@@ -1,4 +1,5 @@
-
+/* globals QRCode */
+/* globals Peer */
 
 class ProgressBar {
 	constructor(elem) {
@@ -24,17 +25,22 @@ class ProgressBar {
 	}
 }
 
-
+/*
 class OverrideConnectionProgress {
 	constructor(conn) {
 		this.conn = conn;
 		this.total = 0;
 		this.upto = 0;
+		this.progressTimeout = 30000;
+		this.progressTimeoutId = null;
 		this.init(conn);
 		this.nextSendProgress = null;
 	}
 
 	onProgress(upto, total) {
+	}
+
+	onProgressStopped() {
 	}
 
 	sendProgress(upto, total) {
@@ -46,34 +52,39 @@ class OverrideConnectionProgress {
 		this.onProgress(upto,total);
 	}
 
+	stopProgressTimeout() {
+		if(this.progressTimeoutId) {
+			clearTimeout(this.progressTimeoutId);
+			this.progressTimeoutId = null;
+		}
+	}
+
+	startProgressTimeout() {
+		this.stopProgressTimeout();
+		this.progressTimeoutId = setTimeout(
+			() => this.onProgressStopped(),
+			this.progressTimeout
+		);
+	}
+
+	// onMessage(conn, chunkedData, key) { }
+
 	init(conn) {
 		const t=this;
 		if (conn.dataChannel && conn.dataChannel.onmessageOrig) {
 			// already setup
 			return;
 		}
-
-		conn.dataChannel.onmessageOrig = conn.dataChannel.onmessage;
-		conn.dataChannel.onmessage = function() {
-			try {
-				let k =Object.keys(conn._chunkedData)[0];
-				if(k !== undefined) {
-					const chunkedData = conn._chunkedData[k];
-					t.sendProgress( chunkedData.count, chunkedData.total);
-				}
-			} catch(e) {
-				console.error('onmessage error',e);
-			}
-			return this.onmessageOrig.apply(this, arguments);
-		}
+		this.progressTimeout = 30000;
 	}
 }
+	*/
 
 class DropNPaste {
 	constructor() {
 		// settings
 		this.reconnectPeerMaxWait = (60000*1);
-		this.pasteAreaTimeoutWait = 2000; // millisecs to wait before uploading changes to
+		this.pasteAreaTimeoutWait = 1200; // millisecs to wait before uploading changes to
 
 		// init
 		this.peer = null;
@@ -86,6 +97,9 @@ class DropNPaste {
 		this.lastPasteAreaValue = '';
 		this.fileList = [];
 		this.fileListUpto = 0;
+		this.filePartSize = 2000000;
+		this.filePartUpto = 0;
+		this.filePartArray = null;
 	}
 
 	async setSendMode() {
@@ -115,11 +129,16 @@ class DropNPaste {
 			// user has changed the name, let's keep it
 			this.changeThisId(id);
 			localStorage.setItem('thisIdIsRandom', false);
+			localStorage.setItem('thisid', id);
 		});
 	}
 
-	async init() {
+	initSearchParams() {
 		this.searchParams = new URLSearchParams(location.search.substring(1));
+	}
+
+	async init() {
+		this.initSearchParams();
 
 		this.peerIdInput=document.getElementById('peerid');
 		this.thisIdInput=document.getElementById('thisid');
@@ -141,14 +160,9 @@ class DropNPaste {
 		}
 	}
 
-	initProgressBar(conn) {
+	initProgressBar(/* conn */) {
 		if(!this.progressBar)
 			this.progressBar = new ProgressBar(document.getElementById('progress-bar'));
-		this.overrideConnectionProgress = new OverrideConnectionProgress(conn);
-		this.overrideConnectionProgress.onProgress = (upto, total) => {
-			this.progressBar.show(true);
-			this.progressBar.setValue(upto / total);
-		};
 	}
 
 	sendPasteArea() {
@@ -192,6 +206,7 @@ class DropNPaste {
 
 	addMessage(html, cls) {
 		const hms = this.getCurrentHMS();
+/*
 		if(this.lastAddMessage == html) {
 			const firstMessage = this.messagesDiv.children[0];
 			if(firstMessage) {
@@ -200,6 +215,7 @@ class DropNPaste {
 			}
 			return;
 		}
+*/
 		this.lastAddMessage = html;
 
 		const newMessage = document.createElement('p');
@@ -245,8 +261,8 @@ class DropNPaste {
 	}
 
 	getThisId() {
-		let oldId = this.thisIdInput.value.trim();
-		let id = this.getId(this.thisIdInput, 'thisid');
+		const oldId = this.thisIdInput.value.trim();
+		const id = this.getId(this.thisIdInput, 'thisid');
 		if (id == "" || id === null) {
 			return this.getRandomName().then((id) => {
 				if(id !== null) {
@@ -255,9 +271,6 @@ class DropNPaste {
 					return id;
 				}
 			});
-		} else {
-			if(localStorage.getItem('thisid') === null)
-				localStorage.setItem('thisid', id);
 		}
 		if(oldId != id) {
 			this.changeThisId(id, true);
@@ -274,8 +287,8 @@ class DropNPaste {
 			const url = `${location.protocol}//${location.host}${location.pathname}?peerid=${id}`;
 
 			if(this.qrcode) {
-				qrcode.clear(); // clear the code.
-				qrcode.makeCode(url);
+				this.qrcode.clear(); // clear the code.
+				this.qrcode.makeCode(url);
 			} else {
 				document.getElementById('qrcode-container').style.display='';
 				const qrcodeDiv = document.getElementById('qrcode');
@@ -301,38 +314,60 @@ class DropNPaste {
 	}
 
 	onPeerOpen() {
-		if(this.sendMode) {
-			const peerId = this.getPeerId();
-			this.setConnection( this.peer.connect(peerId, {}) );
-			if(!this.conn) {
-				console.error('connection failed');
-				return;
+		const peerId = this.getPeerId();
+		this.setConnection( this.peer.connect(peerId, {}) );
+		if(!this.conn) {
+			console.error('connection failed');
+			return;
+		}
+		this.initProgressBar(this.conn);
+		// on open will be launch when you successfully connect to PeerServer
+		this.conn.on('connection', () => {
+			console.log('send connection');
+		});
+		this.conn.on('data', (data) => {
+			if(data.type == 'progress') {
+				this.progressBar.setValue(data.upto / data.total);
+				this.progressBar.show(true);
+			} else if(data.type == 'received') {
+				this.addMessage(`Sent: ${data.filename}`, '');
+				this.nextFile();
+			} else if(data.type == 'received_part') {
+				this.nextFilePart();
+			} else if(data.type == 'progress_stopped') {
+				console.log('progress_stopped message');
+				this.reconnect();
 			}
-			if(this.conn)
-				this.initProgressBar(this.conn);
-			// on open will be launch when you successfully connect to PeerServer
-			this.conn.on('connection', () => {
-				console.log('send connection');
-			});
-			this.conn.on('data', (data) => {
-				if(data.type == 'progress') {
-					this.progressBar.show(true);
-					this.progressBar.setValue(data.upto / data.total);
-				} else if(data.type == 'received') {
-					this.addMessage(`Sent: ${data.filename}`, '');
-					this.nextFile();
-				}
-			});
-			this.conn.on('open', () => {
-				// here you have conn.id
-				this.addMessage(`Connected to: ${peerId}`, '');
-				this.reconnectPeerTimeoutWait = 500;
-				this.sendFile();
-			});
-			this.conn.on('error', (err) => {
-				this.addMessage(`Connection error: ${err}`, 'error');
-				this.reconnectPeer();
-			});
+		});
+		this.conn.on('close', () => {
+			console.log('Connection closed to: ${this.conn.peer}');
+			this.reconnect();
+		});
+		this.conn.on('open', () => {
+			// here you have conn.id
+			this.addBodyClass('peer-unavailable', false);
+			this.setPeerIdIfBlank(peerId);
+			this.addMessage(`Connected to: ${peerId}`, '');
+			this.reconnectPeerTimeoutWait = 500;
+			this.sendFile();
+		});
+		this.conn.on('error', (err) => {
+			this.addMessage(`Connection error: ${err}`, 'error');
+			this.reconnectPeer();
+		});
+	}
+
+	setPeerIdIfBlank(peerId) {
+		if(this.searchParams.get('peerid') === null) {
+			this.searchParams.set('peerid', peerId);
+			window.history.pushState(
+				{},
+				'',
+				'?' + this.searchParams.toString()
+			);
+		}
+		if(this.peerIdInput.value.trim() === "") {
+			this.peerIdInput.value = peerId;
 		}
 	}
 
@@ -371,7 +406,7 @@ class DropNPaste {
 		}
 	}
 
-	addImage(url) {
+	addImage(url, alt) {
 		if(!this.recvImg) {
 			this.recvImg = document.getElementById('recv-img');
 			this.recvImg.addEventListener('click',() => this.showNextImage());
@@ -379,19 +414,73 @@ class DropNPaste {
 		}
 
 		const currentShowns = this.recvImg.querySelectorAll(':scope > img.show-img');
-		for(let showImg of currentShowns) {
+		for(const showImg of currentShowns) {
 			showImg.classList.remove('show-img');
 		}
 		const img = document.createElement('img');
+		img.alt = alt;
 		img.src = url;
 		img.classList.add('show-img');
 		this.recvImg.appendChild(img);
 	}
 
+	downloadFilePartsFinal() {
+		let len = 0;
+		for(const part of this.downloadFileParts) {
+			len += part.length;
+		}
+		const array = new Uint8Array(len);
+		let offset = 0;
+		for(const part of this.downloadFileParts) {
+			array.set(part, offset);
+			offset += part.length;
+		}
+		this.downloadFile({array:[array], filename:this.downloadFilename});
+	}
+
+	downloadFilePart(data) {
+		if(data.upto == 0) {
+			this.downloadFileParts = [];
+		}
+		if(!data.array.length) {
+			this.downloadFilePartsFinal(data.filename);
+			this.downloadFileParts = [];
+		} else {
+			if(data.upto == 0) {
+				this.downloadFilename = data.filename;
+				this.downloadPartsCount = data.parts_count;
+			}
+			this.downloadFileParts.push(data.array);
+			this.conn.send({type:'received_part', upto:data.upto});
+		}
+		this.progressBar.setValue(data.upto / this.downloadPartsCount);
+		this.progressBar.show(true);
+	}
+
+	downloadFile(data) {
+		this.addMessage(`Downloaded: ${data.filename}`, '');
+		var file = new Blob(data.array, {type: "application/octet-stream"});
+
+		if(/\.(png|jpg|gif|avif|webp|svg|bmp)$/i.exec(data.filename)) {
+			if(file.size<20000000) {
+				const url = URL.createObjectURL(file);
+				this.addImage(url, data.filename);
+			} else {
+				console.log(`Image too big, not showing: ${data.filename}, ${file.size}`);
+			}
+		}
+
+		var a = document.createElement("a"), url = URL.createObjectURL(file);
+		a.href = url;
+		a.download = data.filename;
+		document.body.appendChild(a);
+		a.click();
+		this.conn.send({type:'received', filename:data.filename});
+	}
+
 	// connection opened from sender on receiver. Save file
 	onConnOpen(conn) {
 		this.setConnection(conn);
-		this.addMessage(`Connected to: ${conn.peer}`);
 		this.conn.on('data', (data) => {
 			if(data.type == 'startoflist') {
 				return;
@@ -403,6 +492,7 @@ class DropNPaste {
 			if(data.type == 'received') {
 				return;
 			}
+
 			document.getElementById('text-intro').style.display='none';
 			if(data.type == 'text') {
 				console.log('received text');
@@ -414,28 +504,17 @@ class DropNPaste {
 					recvText.classList.remove('has-text');
 				}
 				return;
+			} else if(data.type == 'file_part') {
+				this.downloadFilePart(data);
+			} else if(data.type == 'file') {
+				this.downloadFile({array:[data.array], filename:data.filename});
 			}
-
-			this.addMessage(`Downloaded: ${data.filename}`, '');
-			var file = new Blob([data.array], {type: "application/octet-stream"});
-
-			if(/\.(png|jpg|gif|avif|webp|svg|bmp)$/i.exec(data.filename)) {
-				const url = URL.createObjectURL(file);
-				this.addImage(url);
-			}
-
-			var a = document.createElement("a"), url = URL.createObjectURL(file);
-			a.href = url;
-			a.download = data.filename;
-			document.body.appendChild(a);
-			a.click();
-			this.conn.send({type:'received', filename:data.filename});
 		});
 		this.conn.on('close', () => {
 			console.log('connection closed');
 		});
 		this.conn.on('open', () => {
-			this.addMessage(`Connected from: ${conn.peer}`, '');
+			this.addMessage(`Connected from: ${this.conn.peer}`, '');
 			console.log('connection opened');
 			if(this.conn)
 				this.initProgressBar(this.conn);
@@ -452,8 +531,9 @@ class DropNPaste {
 		this.peer = new Peer(id, {debug:this.searchParams.get('debug') || 2} );
 		this.peer.on('open', () => {
 			this.onPeerOpen();
+			if(localStorage.getItem('thisid') === null)
+				localStorage.setItem('thisid', id);
 		});
-
 		this.peer.on('connection', (conn) => {
 			this.onConnOpen(conn);
 			this.reconnectCount = 0;
@@ -461,7 +541,6 @@ class DropNPaste {
 		this.peer.on('error', (err) => {
 			this.addMessage(`peer error: ${err} ${err.type}`, 'error');
 			const reconnectTypes = {
-				network:true,
 				'server-error':true,
 				'socket-error':true,
 				'socket-closed':true,
@@ -471,6 +550,9 @@ class DropNPaste {
 			if(err.type == 'unavailable-id') {
 				this.addMessage('Is more than one tab opened? Please use a private tab if you wish to open more than one tab. Or pick a new name.', 'error');
 				return;
+			}
+			if(err.type == 'peer-unavailable') {
+				this.addBodyClass('peer-unavailable', true);
 			}
 			if(reconnectTypes[err.type]) {
 				this.reconnectPeer();
@@ -484,6 +566,14 @@ class DropNPaste {
 			console.log(`Disconnected from ${id}`,this.peer);
 			this.reconnect();
 		});
+	}
+
+	addBodyClass(name, add) {
+		if(add) {
+			document.body.classList.add(name);
+		} else {
+			document.body.classList.remove(name);
+		}
 	}
 
 	reconnect() {
@@ -506,7 +596,6 @@ class DropNPaste {
 	uploadFileList(fileList) {
 		this.fileList = fileList;
 		this.fileListUpto = 0;
-		this.progressBar.show(true);
 		this.sendFile();
 	}
 
@@ -518,6 +607,11 @@ class DropNPaste {
 	sendFile() {
 		if(!this.fileList)
 			return;
+		if(!this.conn.open) {
+			console.log('connection not open, reconnect');
+			this.reconnect();
+			return;
+		}
 		const file = this.fileList[this.fileListUpto];
 		if(!file) {
 			if(this.fileList.length >= 3 ) {
@@ -531,11 +625,43 @@ class DropNPaste {
 		this.readFile(file);
 	}
 
+	nextFilePart() {
+		// filePartArray is an ArrayBuffer
+		const start = this.filePartUpto * this.filePartSize;
+		const array = this.filePartArray.slice(start, start + this.filePartSize);
+		const obj = {
+			type:'file_part',
+			array,
+			upto:this.filePartUpto,
+		};
+		this.progressBar.setValue(start / this.filePartArray.byteLength);
+		this.progressBar.show(true);
+
+
+		if(this.filePartUpto == 0) {
+			obj.filename = this.filePartFilename;
+			obj.parts_count = this.filePartArray.byteLength / this.filePartSize;
+		}
+		this.conn.send(obj);
+		++this.filePartUpto;
+	}
+
+	sendFileParts(array, filename) {
+		if(array.length < this.filePartSize) {
+			this.conn.send({type:'file', array, filename});
+		} else {
+			this.filePartUpto = 0;
+			this.filePartFilename = filename;
+			this.filePartArray = array;
+			this.nextFilePart();
+		}
+	}
+
 	readFile(file) {
 		const reader = new FileReader();
 		reader.addEventListener('load', (event) => {
 			this.addMessage(`Sending: ${file.name}`, '');
-			this.conn.send({type:'file', array:event.target.result, filename:file.name});
+			this.sendFileParts(event.target.result, file.name);
 		});
 		reader.readAsArrayBuffer(file);
 	}
@@ -554,6 +680,7 @@ class DropNPaste {
 			event.stopPropagation();
 			event.preventDefault();
 			const fileList = event.dataTransfer.files;
+
 			this.uploadFileList(fileList);
 		});
 		this.initPasteArea(dropArea);

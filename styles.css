@@ -1,7 +1,7 @@
 
 * {
-  	font-family: "Pixelify Sans", serif;
-	font-weight: 400;
+  	font-family: "Doto", serif;
+	font-weight: bold;
 	font-style: normal;
 	font-size: calc(100vh/32);
 	color: #444;
@@ -9,6 +9,10 @@
 	letter-spacing: 1px;
 }
 
+:root {
+  --readable-font: arial, sans-serif;
+  --readable-font-weight: normal;
+}
 
 /***********/
 
@@ -20,11 +24,15 @@
 	margin: auto;
 }
 
+.peer-unavailable .peerid {
+	color: #c00;
+}
+
 /***********/
 
 .drop-area {
-	width: 50vw;
-	height: 25vw;
+	width: 80vw;
+	height: 30vw;
 	vertical-align: middle;
 	/* text-align: center; */
 	margin: auto;
@@ -83,7 +91,10 @@
 
 .qrcode-link {
 	max-width: 90vw;
-	word-break: break-all;
+	/* word-break: break-all; */
+	overflow-wrap: break-word;
+  	font-family: var(--readable-font);
+  	font-weight: var(--readable-font-weight);
 }
 
 /***********/
@@ -97,6 +108,8 @@
   box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
   transition: 300ms ease-in-out;
   margin: 3%;
+  font-family: var(--readable-font);
+  font-weight: var(--readable-font-weight);
 }
 
 .input-text:focus {
@@ -113,6 +126,7 @@
 	mask-image: linear-gradient(to bottom, rgb(0 0 0 / 100%) 128px, rgb(255 255 255 / 40%) 100%);
 }
 .messages p {
+	font-family: var(--readable-font);
 	font-size: 2vh;
 	margin: 0px;
 }
