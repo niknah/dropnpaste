@@ -80,6 +80,28 @@ class OverrideConnectionProgress {
 }
 	*/
 
+
+class HelpButton {
+	constructor() {
+    		this.helpDiv = document.getElementById('help-div');
+		window.addEventListener('click',() => {
+			this.helpDiv.style.display='none';
+		});
+    		this.helpButton = document.getElementById('help-button');
+		this.helpButton.addEventListener('click',() => {
+			this.show();
+		});
+	}
+	show() {
+		return fetch('README.md').then((resp) => {
+			return resp.text();
+		}).then((md) => {
+			this.helpDiv.innerHTML = marked.parse(md);
+			this.helpDiv.style.display='';
+		});
+	}
+}
+
 class DropNPaste {
 	constructor() {
 		// settings
@@ -100,6 +122,7 @@ class DropNPaste {
 		this.filePartSize = 2000000;
 		this.filePartUpto = 0;
 		this.filePartArray = null;
+		this.helpButton = new HelpButton();
 	}
 
 	async setSendMode() {

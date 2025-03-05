@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="styles.css">
 	<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 	<link href="/favicon.png" type="image/png" rel="shortcut icon" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +13,14 @@
 </head>
 <body>
 
+<div id='help-div' class='help-div' style='display: none'></div>
 <div class='main-container'>
 	<div class='buttons-container'>
-		<button id='send' class='Btn'>Send</button>
-		<button id='recv' class='Btn'>Receive</button>
+		<span class='send-recv-buttons-container'>
+			<button id='send' class='Btn send-button'>Send</button>
+			<button id='recv' class='Btn recv-button'>Receive</button>
+		</span>
+		<button id='help-button' class='Btn help-button'>?</button>
 	</div>
 
 	<table class='inputs-table'>
@@ -57,11 +62,9 @@
 
 	<div id='recv-div' class='recv-div recv-item'>
 		<div id='text-intro' class='text-intro'>
-			Send file(s)/text from one browser to another on the same network quickly.
-			<br />
-			Alternative to Airdrop, Quick share, sharedrop.io, etc.
-			<br />
-			Works on any device with a modern web browser.
+			<p>Send file(s)/text from one browser to another on the same network quickly.</p>
+			<p>Alternative to Airdrop, Quick share, sharedrop.io, etc.</p>
+			<p>Works on any device with a modern web browser.</p>
 		</div>
 		<div id='instructions' class='instructions'></div>
 		<div id='recv-img' class='recv-img'></div>
