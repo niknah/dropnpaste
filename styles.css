@@ -1,12 +1,13 @@
 
 * {
   	font-family: "Doto", serif;
-	font-weight: bold;
+	font-optical-sizing: auto;
+	font-weight: 700;
 	font-style: normal;
 	font-size: calc(100vh/32);
-	color: #444;
+	color: #000;
 	/* the f letter is too close to i in "fi" */
-	letter-spacing: 1px;
+	/* letter-spacing: 1px; */
 }
 
 :root {
