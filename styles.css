@@ -10,6 +10,11 @@
 	/* letter-spacing: 1px; */
 }
 
+p {
+	margin-block-start: 0.5em;
+	margin-block-end: 0.5em;
+}
+
 :root {
   --readable-font: arial, sans-serif;
   --readable-font-weight: normal;
@@ -19,11 +24,14 @@ body {
 	margin: 0px;
 }
 
+.inline-block {
+	display: inline-block;
+}
+
 /***********/
 
 .main-container {
 	padding: 4px;
-	width: 100%;
 }
 
 .inputs-table {
@@ -32,6 +40,13 @@ body {
 
 .peer-unavailable .peerid {
 	color: #c00;
+}
+
+.peerid-connecting {
+	display: none;
+}
+.show-peerid-connecting .peerid-connecting {
+	display: inline-block;
 }
 
 /***********/
@@ -53,6 +68,8 @@ body {
 	margin: auto;
 }
 .recv-text {
+  	font-family: var(--readable-font);
+  	font-weight: var(--readable-font-weight);
 	width: fit-content;
 	margin: 4px auto;
 }
@@ -89,10 +106,10 @@ body {
 	margin: auto;
 }
 .qrcode img {
-	width: 60vw;
-	height: 60vw;
-	max-width: 60vh;
-	max-height: 60vh;
+	width: 50vw;
+	height: 50vw;
+	max-width: 50vh;
+	max-height: 50vh;
 }
 
 .qrcode-link {
@@ -113,9 +130,9 @@ body {
   background-color: #ccc;
   box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
   transition: 300ms ease-in-out;
-  margin: 3%;
   font-family: var(--readable-font);
   font-weight: var(--readable-font-weight);
+  margin: 3%;
 }
 
 .input-text:focus {
@@ -178,6 +195,13 @@ button {
 
 
 /***********/
+
+.connected-item {
+	display: none;
+}
+.connected .connected-item {
+	display: block;
+}
 
 .send-item, .recv-item, .send-item-tr, .recv-item-tr {
 	display: none;
@@ -442,5 +466,32 @@ button {
   }
 }
 
+
+/***********/
+/* connecting bar */
+
+.connecting {
+    position: relative;
+    width: 56px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(#444 50px, transparent 0),
+                      linear-gradient(#444 50px, transparent 0),
+                      linear-gradient(#444 50px, transparent 0),
+                      linear-gradient(#444 50px, transparent 0),
+                      linear-gradient(#444 50px, transparent 0),
+                      linear-gradient(#444 50px, transparent 0);
+    background-position: 0px center, 15px center, 30px center, 45px center, 60px center, 75px center, 90px center;
+    animation: rikSpikeRoll 0.65s linear infinite alternate;
+  }
+@keyframes rikSpikeRoll {
+  0% { background-size: 10px 3px;}
+  16% { background-size: 10px 50px, 10px 3px, 10px 3px, 10px 3px, 10px 3px, 10px 3px}
+  33% { background-size: 10px 30px, 10px 50px, 10px 3px, 10px 3px, 10px 3px, 10px 3px}
+  50% { background-size: 10px 10px, 10px 30px, 10px 50px, 10px 3px, 10px 3px, 10px 3px}
+  66% { background-size: 10px 3px, 10px 10px, 10px 30px, 10px 50px, 10px 3px, 10px 3px}
+  83% { background-size: 10px 3px, 10px 3px,  10px 10px, 10px 30px, 10px 50px, 10px 3px}
+  100% { background-size: 10px 3px, 10px 3px, 10px 3px,  10px 10px, 10px 30px, 10px 50px}
+}
 
 /***********/
