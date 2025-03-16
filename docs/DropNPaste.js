@@ -539,7 +539,7 @@ class DropNPaste {
 			array.set(new Uint8Array(part), offset);
 			offset += part.byteLength;
 		}
-console.log('file parts final', len, array, this.downloadFileParts);
+		console.log('file parts final', len, array, this.downloadFileParts);
 		this.downloadFile({array:[array], filename:this.downloadFilename});
 	}
 	downloadFilePart(data) {
@@ -548,7 +548,6 @@ console.log('file parts final', len, array, this.downloadFileParts);
 			this.downloadFilename = data.filename;
 			this.downloadPartsCount = data.parts_count;
 		}
-console.log('dddarray',data.array, this.downloadFileParts);
 		if(!data.array.byteLength) {
 			this.downloadFilePartsFinal(data.filename);
 			this.downloadFileParts = [];
@@ -556,7 +555,6 @@ console.log('dddarray',data.array, this.downloadFileParts);
 			this.downloadFileParts.push(data.array);
 			this.conn.send({type:'received_part', upto:data.upto});
 		}
-console.log('dddarray2',data.array, this.downloadFileParts);
 		this.progressBar.setValue(data.upto / this.downloadPartsCount);
 		this.progressBar.show(true);
 	}
@@ -619,8 +617,10 @@ console.log('dddarray2',data.array, this.downloadFileParts);
 		} else if(data.type == 'received') {
 			if(this.debug)
 				this.messages.addMessage(`Sent: ${data.filename}`, '');
+			this.startProgressTimeout();
 			this.nextFile();
 		} else if(data.type == 'received_part') {
+			this.startProgressTimeout();
 			this.nextFilePart();
 		} else if(data.type == 'progress_stopped') {
 			console.log('progress_stopped message');
