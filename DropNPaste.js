@@ -292,7 +292,8 @@ class DropNPaste {
 
 	getRandomName() {
 		try {
-			const url = 'https://random-word-api.herokuapp.com/word?number=2';
+//			const url = 'https://random-word-api.herokuapp.com/word?number=2';
+			const url = 'https://random-word-api.vercel.app/api?words=2';
 			return fetch(url).then((response) => {
 				if (!response.ok) {
 					throw new Error(`Response status: ${response.status}`);
@@ -303,6 +304,9 @@ class DropNPaste {
 					return s.substring(0,1).toUpperCase()+s.substring(1);
 				}
 				return cap(json[0])+cap(json[1]);
+			}).catch((e) => {
+				console.error(e);
+				return 'User' + Math.floor(Math.random()*10000000);
 			});
 		} catch (error) {
 			console.error(error.message);
