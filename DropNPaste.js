@@ -153,6 +153,8 @@ class DropNPaste {
 		this.helpButton = new HelpButton();
 		this.debug = 0;
 		this.progressTimeout = 30000;
+		this.images = [];
+		this.imageUpto = 0;
 	}
 
 	//////////////////////
@@ -495,7 +497,20 @@ class DropNPaste {
 
 	//////////////////////
 
+	setImage(url, alt) {
+		this.recvImg.src = url;
+		this.recvImg.alt = alt;
+	}
+
 	showNextImage() {
+		--this.imageUpto;
+		if(this.imageUpto < 0) {
+			this.imageUpto = this.images.length - 1;
+		}
+		const image = this.images[this.imageUpto];
+		this.setImage(image.url, image.alt);
+
+	/*
 		const currentShown = this.recvImg.querySelector(':scope > img.show-img');
 		let prevImg = null;
 		if(currentShown) {
@@ -509,6 +524,7 @@ class DropNPaste {
 		if(prevImg) {
 			prevImg.classList.add('show-img');
 		}
+		*/
 	}
 
 	addImage(url, alt) {
@@ -517,7 +533,11 @@ class DropNPaste {
 			this.recvImg.addEventListener('click',() => this.showNextImage());
 			this.recvImg.addEventListener('keypress',() => this.showNextImage());
 		}
+		this.imageUpto = this.images.length;
+		this.images.push({url, alt});
+		this.setImage(url, alt);
 
+/*
 		const currentShowns = this.recvImg.querySelectorAll(':scope > img.show-img');
 		const img = document.createElement('img');
 		img.alt = alt;
@@ -528,6 +548,7 @@ class DropNPaste {
 			showImg.classList.remove('show-img');
 		}
 		this.recvImg.appendChild(img);
+		*/
 	}
 
 	//////////////////////
