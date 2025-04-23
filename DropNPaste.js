@@ -878,17 +878,34 @@ class DropNPaste {
 	initDropArea() {
 		const dropArea = document.getElementById('drop-area');
 
+		function dragEnd() {
+			dropArea.classList.remove('drag-over');
+		}
+
+		dropArea.addEventListener('dragleave', (event) => {
+			dragEnd();
+		});
+
 		dropArea.addEventListener('dragover', (event) => {
 			event.stopPropagation();
 			event.preventDefault();
+			dropArea.classList.add('drag-over');
 			// Style the drag-and-drop as a "copy file" operation.
 			event.dataTransfer.dropEffect = 'copy';
+		});
+
+		dropArea.addEventListener('dragend', (event) => {
+			dragEnd();
 		});
 
 		dropArea.addEventListener('drop', (event) => {
 			event.stopPropagation();
 			event.preventDefault();
 			const fileList = event.dataTransfer.files;
+			dragEnd();
+			if(fileList.length == 0) {
+				this.messages.addMessage(`No files received, some times browsers cannot read files on the network. ${this.fileList.length}`, '');
+			}
 
 			this.uploadFileList(fileList);
 		});
