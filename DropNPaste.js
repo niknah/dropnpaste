@@ -425,7 +425,10 @@ class DropNPaste {
 			this.setPeerIdIfBlank(peerId);
 			this.messages.addMessage(`Connected to: ${peerId}`, '');
 			this.reconnectPeerTimeoutWait = 500;
-			this.sendFile();
+			if(this.fileList)
+				this.sendFile();
+			else
+				this.changePasteArea();
 		});
 		this.conn.on('error', (err) => {
 			this.messages.addMessage(`Connection error: ${err}`, 'error');
