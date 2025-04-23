@@ -26,45 +26,6 @@ class ProgressBar {
 	}
 }
 
-/*
-class OverrideConnectionProgress {
-	constructor(conn) {
-		this.conn = conn;
-		this.total = 0;
-		this.upto = 0;
-		this.progressTimeout = 30000;
-		this.progressTimeoutId = null;
-		this.init(conn);
-		this.nextSendProgress = null;
-	}
-
-	onProgress(upto, total) {
-	}
-
-
-	sendProgress(upto, total) {
-		const now = new Date().getTime();
-		if(this.nextSendProgress === null || now >= this.nextSendProgress || upto >= (total-1)) {
-			this.conn.send({type:'progress', upto, total});
-			this.nextSendProgress = now + (50);
-		}
-		this.onProgress(upto,total);
-	}
-
-
-	// onMessage(conn, chunkedData, key) { }
-
-	init(conn) {
-		const t=this;
-		if (conn.dataChannel && conn.dataChannel.onmessageOrig) {
-			// already setup
-			return;
-		}
-		this.progressTimeout = 30000;
-	}
-}
-	*/
-
 
 class HelpButton {
 	constructor() {
@@ -219,6 +180,7 @@ class DropNPaste {
 			this.peerIdInput.value = peerId;
 		}
 
+		this.initReceivedTextCopy();
 		this.initButtons();
 		this.initDropArea();
 		this.initFileSelector();
@@ -264,15 +226,13 @@ class DropNPaste {
 		this.pasteAreaTimeout = setTimeout(() => {
 			this.pasteAreaTimeout = null;
 			this.sendPasteArea();
-		},this.pasteAreaTimeoutWait);
+		}, this.pasteAreaTimeoutWait);
 	}
 
 	initPasteArea(elem) {
 		this.pasteArea=elem;
-		this.pasteArea.addEventListener('keypress', () => this.changePasteArea());
-		this.pasteArea.addEventListener('click', () => this.changePasteArea());
+		this.pasteArea.addEventListener('input', () => this.changePasteArea());
 		this.pasteArea.addEventListener('change', () => this.changePasteArea());
-		this.pasteArea.addEventListener('paste', () => this.changePasteArea());
 	}
 
 	//////////////////////
@@ -610,13 +570,43 @@ class DropNPaste {
 
 	//////////////////////
 
+	initReceivedTextCopy() {
+		const copyButton = document.getElementById('recv-text-copy');
+		if(!navigator.clipboard) {
+			copyButton.style.display = 'none';
+		}
+		copyButton.addEventListener('animationend', function() {
+			copyButton.classList.remove('copy-animate');
+		});
+		copyButton.addEventListener('click', function() {
+			// Get the text content from the element
+			const text = document.getElementById('recv-text').innerText;
+
+			// Use the Clipboard API
+			if(!navigator.clipboard) {
+				alert('no clipboard available');
+				return;
+			}
+			return navigator.clipboard.writeText(text)
+				.then(() => {
+					copyButton.classList.add('copy-animate');
+					console.log('copied to clipboard');
+				})
+				.catch(err => {
+					console.error('Failed to copy: ', err);
+					alert('Failed to copy text');
+				});
+		});
+	}
+
 	receivedText(data) {
 		const recvText = document.getElementById('recv-text');
+		const recvTextWrapper = document.getElementById('recv-text-wrapper');
 		recvText.innerHTML = data.value;
 		if(data.value != "") {
-			recvText.classList.add('has-text');
+			recvTextWrapper.classList.add('has-text');
 		} else {
-			recvText.classList.remove('has-text');
+			recvTextWrapper.classList.remove('has-text');
 		}
 	}
 

@@ -8,6 +8,9 @@ Alternative to Airdrop, Quick share, sharedrop.io, snapdrop.net, etc.
 
 Uses WebRTC.  Works if the two devices are connected to the same network.
 
+All on the web browser, no server needed.
+
+
 ### Troubleshooting...
 
 * It may not work in public WiFis because their security may restrict devices from transferring to each other.  You can make one of the devices a hotspot and connect to the hotspot to make the transfer.

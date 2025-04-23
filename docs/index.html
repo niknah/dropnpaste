@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="stylesheet" href="styles.css">
 	<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -59,7 +60,10 @@
 		<div class="block-meter"></div>
 	</div>
 
-	<pre id='recv-text' class='recv-text'></pre>
+	<div id='recv-text-wrapper' class='recv-text-wrapper'>
+		<button id='recv-text-copy' class='recv-text-copy' title='Copy to clipboard'>📋</button>
+		<pre id='recv-text' class='recv-text'></pre>
+	</div>
 
 	<div id='send-div' class='send-div connected-item'>
 		<div class='file-selector-container'>
@@ -67,7 +71,7 @@
 			<input type="file" id="file-selector"  class='fileBtn file-selector' multiple />
 		</div>
 		<br />
-		<textarea id='drop-area' class='drop-area' placeholder="Paste some text here. Or drop a file."></textarea>
+		<textarea id='drop-area' class='drop-area' placeholder="Paste some text here.  Or drop a file."></textarea>
 	</div>
 
 	<div id='recv-div' class='recv-div recv-item'>

@@ -16,8 +16,9 @@ p {
 }
 
 :root {
-  --readable-font: arial, sans-serif;
-  --readable-font-weight: normal;
+	--readable-font: arial, sans-serif;
+	--readable-font-weight: normal;
+	--button-background-color: rgb(151, 95, 255);
 }
 
 body {
@@ -63,15 +64,22 @@ body {
 	display: block;
 }
 
+.drag-over {
+	background-color: #ccc;
+}
+
 .instructions, .text-intro {
 	width: fit-content;
 	margin: auto;
 }
+
 .recv-text {
   	font-family: var(--readable-font);
   	font-weight: var(--readable-font-weight);
 	width: fit-content;
-	margin: 4px auto;
+	max-width: 80vw;
+	max-height: 80vh;
+	overflow: auto;
 }
 
 
@@ -87,10 +95,54 @@ body {
 	display: block;
 }
 
-.recv-text.has-text {
+.recv-text-wrapper button {
+}
+
+.recv-text-wrapper {
+	padding: 1vw;
+	display: none;
+}
+
+.recv-text-wrapper.has-text {
 	border-radius: 2vw;
 	border: 3px solid #444;
-	padding: 1vw;
+	padding: 0.5vw;
+	margin: 4px auto;
+	width: fit-content;
+	display: block;
+}
+
+.recv-text-copy {
+	border: 2px solid #000;
+	border-radius: 10px;
+	--bg: hsl(190deg 20% 10%);
+	--border-angle: 0deg;
+}
+.recv-text-copy:hover {
+	background-color: var(--button-background-color);
+}
+
+.copy-animate {
+	border: 2px solid transparent;
+	background: linear-gradient(white, white) padding-box,
+	conic-gradient(
+		from var(--border-angle),
+		var(--bg) 50%,
+		white
+	)
+	border-box;
+	animation: border-angle-rotate 0.3s linear;
+}
+
+@property --border-angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+
+@keyframes border-angle-rotate {
+	from { --border-angle: 0deg; }
+	to { --border-angle: 360deg; }
 }
 
 /***********/
@@ -272,7 +324,7 @@ button {
 }
 
 .block-meter {
-  background-color: #813dff;
+  background-color: var(--button-background-color);
 }
 
 .block-border:nth-of-type(1) {
@@ -372,7 +424,7 @@ button {
 
 .flash {
   animation-name: flash;
-  animation-duration: 0.4s;
+  animation-duration: 1s;
   animation-iteration-count: infinite;
 }
 
