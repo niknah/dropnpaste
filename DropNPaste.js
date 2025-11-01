@@ -113,9 +113,10 @@ class DropNPaste {
 		this.filePartArray = null;
 		this.helpButton = new HelpButton();
 		this.debug = 0;
-		this.progressTimeout = 30000;
+		this.progressTimeout = 20000;
 		this.images = [];
 		this.imageUpto = 0;
+		this.lastProgressTimeoutStart = new Date().getTime();
 	}
 
 	//////////////////////
@@ -752,7 +753,11 @@ class DropNPaste {
 	// Progress timeout
 
 	async onProgressStopped() {
-		this.messages.addMessage(`No progress, reconnect`,'');
+		let extraMess = '';
+		if (this.lastProgressTimeoutStart < (new Date().getTime()-60000)) {
+			extraMess = 'Try another network, make a hotspot and connect to it';
+		}
+		this.messages.addMessage(`No progress, reconnecting. ${extraMess}`,'');
 		this.startProgressTimeout();
 		this.initPeer(await this.getThisId());
 	}
@@ -765,6 +770,7 @@ class DropNPaste {
 	}
 
 	startProgressTimeout() {
+		this.lastProgressTimeoutStart = new Date().getTime();
 		this.stopProgressTimeout();
 		this.progressTimeoutId = setTimeout(
 			() => this.onProgressStopped(),
